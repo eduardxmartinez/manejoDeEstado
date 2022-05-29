@@ -4,15 +4,25 @@ import React from "react";
 const SECURITY_CODE = "paradigma"
 
 function UseReducer({ name }) {
-    const [state, dispatch] = React.useReducer(reducer,initialState);
+    const [state, dispatch] = React.useReducer(reducer, initialState);
+
+    const onConfirm = () => { dispatch({ type: actionTypes.confirm });}
+    const onError = () => { dispatch({ type: actionTypes.error });}
+    const onCheck = () => { dispatch({ type: actionTypes.check });}
+    const onReset = () => { dispatch({ type: actionTypes.reset });}
+    const onDelete = () => { dispatch({ type: actionTypes.delete });}
+    
+    const onWrite = (event) => {
+        dispatch({ type: actionTypes.write, payload: event.target.value })
+    }
 
     React.useEffect(() => {
         if (!!state.loading) {
             setTimeout(() => {
                 if (state.value === SECURITY_CODE) {
-                    dispatch({type: "CONFIRM"})
+                    onConfirm()
                 } else {
-                    dispatch({ type: "ERROR" })
+                    onError()
                 }
             }, 3000)
         }
@@ -34,14 +44,9 @@ function UseReducer({ name }) {
                 <input
                     placeholder="Código de seguridad"
                     value={state.value}
-                    onChange={(event) =>
-                        dispatch({ type: "WRITE", payload: event.target.value })
-                    }
+                    onChange={onWrite}
                 />
-                <button
-                    onClick={() =>
-                        dispatch({ type: "CHECK" })
-                    }
+                <button onClick={onCheck}
                 >Comprobar</button>
             </div>
         )
@@ -50,12 +55,10 @@ function UseReducer({ name }) {
             <div>
                 <h2>Eliminar {name}</h2>
                 <p>¿Segurx?</p>
-                <button
-                    onClick={() => dispatch({ type: "DELETE" })}>
+                <button onClick={onDelete}>
                     si
                 </button>
-                <button
-                    onClick={() => dispatch({ type: "RESET" })}>
+                <button onClick={onReset}>
                     Volver
                 </button>
             </div>
@@ -66,8 +69,7 @@ function UseReducer({ name }) {
             <div>
                 <h2>Eliminar {name}</h2>
                 <p>Eliminado con éxito</p>
-                <button
-                    onClick={() => dispatch({ type: "RESET" })}>
+                <button onClick={onReset}>
                     Resetear
                 </button>
             </div>
@@ -84,35 +86,44 @@ const initialState = {
     confirmed: false
 }
 
+const actionTypes = {
+    confirm: "CONFIRM",
+    error: "ERROR",
+    check: "CHECK",
+    write: "WRITE",
+    delete: "DELETE",
+    reset: "RESET"
+}
+
 const reducerObj = (state, paylod) => ({
-    "CONFIRM": {
+    [actionTypes.confirm]: {
         ...state,
         loading: false,
         error: false,
         confirmed: true,
     },
-    "ERROR": {
+    [actionTypes.error]: {
         ...state,
         loading: false,
         error: true
     },
-    "CHECK": {
+    [actionTypes.check]: {
         ...state,
         loading: true,
     },
-    "WRITE": {
+    [actionTypes.write]: {
         ...state,
         value: paylod
     },
-    "DELETE": {
+    [actionTypes.delete]: {
         ...state,
-        deleted:true
+        deleted: true
     },
-    "RESET":{
+    [actionTypes.reset]: {
         ...state,
-        confirmed:false,
+        confirmed: false,
         deleted: false,
-        value:""
+        value: ""
     }
 })
 
